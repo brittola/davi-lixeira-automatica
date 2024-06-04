@@ -1,13 +1,14 @@
 #include <Servo.h>
 
 #define VELOCIDADE_DO_SOM 0.034
-#define POS_INICIAL 60
+#define POS_FECHADO 60
 #define POS_ABERTO 180
 
 Servo meuServo;
 
 const int trigPin = 4;
 const int echoPin = 5;
+bool open = false;
 
 long duration;
 int distance;
@@ -17,7 +18,7 @@ void setup() {
   pinMode(echoPin, INPUT);
   Serial.begin(9600);
   meuServo.attach(9);
-  meuServo.write(posServo);
+  meuServo.write(POS_FECHADO);
 }
 
 void loop() {
@@ -32,9 +33,15 @@ void loop() {
   distance = duration * VELOCIDADE_DO_SOM / 2; // dividido por dois para não contar distância de ida + volta do som
 
   if (distance > 0 && distance <= 30) {
+    if (!open) {
+      Serial.println("PLAY_AUDIO");
+      delay(600);
+    }
     meuServo.write(POS_ABERTO);
+    open = true;
     delay(2000);
   } else {
     meuServo.write(POS_FECHADO);
+    open = false;
   }
 }
